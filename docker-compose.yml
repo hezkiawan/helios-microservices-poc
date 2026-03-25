@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # THE DATA LAYER
+  # ==========================================
+  registry-db:
+    image: postgres:15-alpine
+    container_name: registry-db
+    environment:
+      - POSTGRES_USER=helios_admin
+      - POSTGRES_PASSWORD=supersecret
+      - POSTGRES_DB=registry_db
+    ports:
+      - "5432:5432"
+    networks:
+      - helios-network
+
+  telemetry-db:
+    image: redis:7-alpine
+    container_name: telemetry-db
+    ports:
+      - "6379:6379"
+    networks:
+      - helios-network
+
+  # ==========================================
+  # THE MICROSERVICES
+  # ==========================================
+  service-registry:
+    build: ./service-registry
+    container_name: service-registry
+    ports:
+      - "8081:8081"
+    depends_on:
+      - registry-db
+    networks:
+      - helios-network
+
+  service-telemetry:
+    build: ./service-telemetry
+    container_name: service-telemetry
+    ports:
+      - "8082:8082"
+    depends_on:
+      - telemetry-db
+    networks:
+      - helios-network
+
+  # ==========================================
+  # THE FRONTEND ORCHESTRATOR (BFF)
+  # ==========================================
+  frontend-dashboard:
+    build: ./frontend-dashboard
+    container_name: frontend-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      # Next.js uses these internal Docker DNS names to fetch data!
+      - REGISTRY_URL=http://service-registry:8081
+      - TELEMETRY_URL=http://service-telemetry:8082
+    depends_on:
+      - service-registry
+      - service-telemetry
+    networks:
+      - helios-network
+
+networks:
+  helios-network:
+    driver: bridge

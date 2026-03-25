@@ -1,0 +1,12 @@
+# Node and Next.js
+frontend-dashboard/node_modules/
+frontend-dashboard/.next/
+frontend-dashboard/npm-debug.log
+
+# Go binaries
+service-registry/main
+service-telemetry/main
+*.exe
+
+# OS generated files
+.DS_Store
