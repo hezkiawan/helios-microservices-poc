@@ -1,5 +1,9 @@
-FROM golang:1.21-alpine
+FROM golang:1.23-alpine
 WORKDIR /app
+
+# 0. Install git
+RUN apk add --no-cache git
+
 COPY . .
 
 # 1. Delete any Windows-generated module files
