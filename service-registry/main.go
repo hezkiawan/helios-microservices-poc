@@ -22,7 +22,6 @@ var db *sql.DB
 
 func main() {
 	// 1. CONNECT TO POSTGRES
-	// Notice we use 'localhost' because we are currently running this Go code directly on Windows,
 	// communicating with the exposed Docker port 5432.
 	connStr := "host=registry-db port=5432 user=helios_admin password=supersecret dbname=registry_db sslmode=disable"
 	var err error
