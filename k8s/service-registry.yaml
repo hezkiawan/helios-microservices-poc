@@ -1,0 +1,31 @@
+# k8s/service-registry.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-registry # 📞 The internal DNS name Next.js will use
+spec:
+  selector:
+    app: service-registry
+  ports:
+    - port: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-registry
+  template:
+    metadata:
+      labels:
+        app: service-registry
+    spec:
+      containers:
+      - name: service-registry
+        image: microhelios-service-registry:latest
+        imagePullPolicy: Never # 🛑 Crucial for local Minikube images!
+        ports:
+        - containerPort: 8081

@@ -1,0 +1,31 @@
+# k8s/service-telemetry.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-telemetry # 📞 The internal DNS name Next.js will use
+spec:
+  selector:
+    app: service-telemetry
+  ports:
+    - port: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-telemetry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-telemetry
+  template:
+    metadata:
+      labels:
+        app: service-telemetry
+    spec:
+      containers:
+      - name: service-telemetry
+        image: microhelios-service-telemetry:latest
+        imagePullPolicy: Never # 🛑 Crucial for local Minikube images!
+        ports:
+        - containerPort: 8082

@@ -1,0 +1,39 @@
+# k8s/frontend-dashboard.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-dashboard
+spec:
+  selector:
+    app: frontend-dashboard
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-dashboard
+  template:
+    metadata:
+      labels:
+        app: frontend-dashboard
+    spec:
+      containers:
+      - name: frontend-dashboard
+        # Make sure this matches your local docker-compose build name!
+        image: microhelios-frontend-dashboard:latest 
+        imagePullPolicy: Never # 🛑 Crucial for local Minikube images
+        ports:
+        - containerPort: 3000
+        env:
+        # These URLs use Kubernetes Native Service Discovery!
+        - name: REGISTRY_URL
+          value: "http://service-registry:8081"
+        - name: TELEMETRY_URL
+          value: "http://service-telemetry:8082"

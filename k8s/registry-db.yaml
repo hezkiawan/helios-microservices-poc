@@ -1,0 +1,37 @@
+# k8s/registry-db.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry-db
+spec:
+  selector:
+    app: registry-db
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry-db
+  template:
+    metadata:
+      labels:
+        app: registry-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: helios_admin
+        - name: POSTGRES_PASSWORD
+          value: supersecret
+        - name: POSTGRES_DB
+          value: registry_db

@@ -1,0 +1,30 @@
+# k8s/telemetry-db.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: telemetry-db # 📞 The internal DNS name
+spec:
+  selector:
+    app: telemetry-db
+  ports:
+    - port: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetry-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemetry-db
+  template:
+    metadata:
+      labels:
+        app: telemetry-db
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
